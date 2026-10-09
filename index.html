@@ -1,10 +1,365 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Portfolyo</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PAIISS42 · Roblox Developer</title>
+<meta name="description" content="PAIISS42 — Roblox Developer portfolio. Scripting, building, UI and animation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1017; --bg2:#131722; --panel:#171c28; --line:#252b3b;
+  --text:#d6deeb; --muted:#7f8aa3; --dim:#4b5468;
+  --kw:#ff6b81; --fn:#82aaff; --str:#c3e88d; --num:#f78c6c; --prop:#ffcb6b; --ok:#43d9a3;
+  --accent:#ff3b4f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;line-height:1.6;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(800px 400px at 80% -10%,rgba(255,59,79,.12),transparent 60%),
+             radial-gradient(700px 400px at 0% 110%,rgba(130,170,255,.10),transparent 60%);}
+a{color:inherit;text-decoration:none}
+.wrap{position:relative;z-index:1;max-width:1040px;margin:0 auto;padding:0 16px}
+
+/* ---------- top bar (editor tabs) ---------- */
+nav{position:sticky;top:0;z-index:10;background:rgba(13,16,23,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:4px;height:48px;overflow-x:auto;scrollbar-width:none}
+nav .wrap::-webkit-scrollbar{display:none}
+.dots{display:flex;gap:6px;margin-right:14px;flex-shrink:0}
+.dots i{width:11px;height:11px;border-radius:50%;display:block}
+.dots i:nth-child(1){background:#ff5f57}.dots i:nth-child(2){background:#febc2e}.dots i:nth-child(3){background:#28c840}
+.tab{font-size:13px;color:var(--muted);padding:6px 12px;border-radius:6px;white-space:nowrap;transition:.2s}
+.tab:hover{color:var(--text);background:var(--panel)}
+.tab b{color:var(--fn);font-weight:500}
+
+/* ---------- hero ---------- */
+.hero{min-height:calc(100vh - 48px);display:flex;flex-direction:column;justify-content:center;padding:60px 0}
+.hero .path{color:var(--dim);font-size:13px;margin-bottom:18px}
+.code{font-size:clamp(17px,3.6vw,34px);font-weight:700;line-height:1.45;word-break:break-word;min-height:3em}
+.code .kw{color:var(--kw)} .code .var{color:var(--text)} .code .op{color:var(--muted)}
+.code .fn{color:var(--fn)} .code .prop{color:var(--prop)} .code .mod{color:var(--accent)}
+.caret{display:inline-block;width:.55em;height:1.05em;background:var(--accent);vertical-align:-.15em;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.out{margin-top:22px;font-size:clamp(13px,1.8vw,16px);color:var(--muted);min-height:4.8em}
+.out div{opacity:0;transform:translateY(6px);transition:.4s}
+.out div.show{opacity:1;transform:none}
+.out .ok{color:var(--ok)}
+.out .c{color:var(--dim)}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:34px;opacity:0;transition:.6s}
+.cta.show{opacity:1}
+.btn{font-family:inherit;font-size:14px;padding:12px 18px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer;transition:.2s}
+.btn:hover{border-color:var(--fn);transform:translateY(-2px)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.1);border-color:var(--accent)}
+
+/* ---------- sections ---------- */
+section{padding:90px 0}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:34px;flex-wrap:wrap}
+.sec-head h2{font-size:clamp(22px,3.5vw,30px);font-weight:800}
+.sec-head h2 .kw{color:var(--kw)}
+.sec-head .file{color:var(--dim);font-size:13px}
+
+.window{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.window .bar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--bg2);font-size:12px;color:var(--muted)}
+.lines{display:grid;grid-template-columns:auto 1fr;font-size:14px;padding:16px 0}
+.ln{color:var(--dim);text-align:right;padding:0 16px;user-select:none}
+.lc{padding-right:16px;white-space:pre-wrap;word-break:break-word}
+.k{color:var(--kw)}.f{color:var(--fn)}.s{color:var(--str)}.n{color:var(--num)}.p{color:var(--prop)}.cm{color:var(--dim);font-style:italic}
+
+/* ---------- games ---------- */
+.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px}
+.game{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:.25s}
+.game:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 14px 40px -18px rgba(255,59,79,.5)}
+.thumb{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#1b2233,#241a2e);overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:.4s}
+.game:hover .thumb img{transform:scale(1.05)}
+.thumb img.contain{object-fit:contain;padding:22px;position:relative;z-index:1}
+.thumb .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--muted);font-size:13px;text-align:center;padding:16px}
+.thumb .ph strong{font-size:22px;color:var(--text)}
+.thumb .tag{position:absolute;top:10px;left:10px;font-size:11px;background:rgba(13,16,23,.8);border:1px solid var(--line);padding:3px 8px;border-radius:6px;color:var(--muted)}
+.gbody{padding:18px;display:flex;flex-direction:column;gap:12px;flex:1}
+.gbody h3{font-size:17px}
+.gbody p{font-size:13px;color:var(--muted);flex:1}
+.role{font-size:13px;background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.role .p{margin-right:6px}
+.chip{display:inline-block;color:var(--str);margin-right:4px}
+.play{align-self:flex-start;font-size:13px;color:var(--fn)}
+.play:hover{text-decoration:underline}
+
+/* ---------- contact ---------- */
+.contacts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.contact{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:.2s;text-align:left;font-family:inherit;color:inherit;font-size:inherit}
+.contact:hover{border-color:var(--fn);transform:translateY(-3px)}
+.contact .lbl{font-size:12px;color:var(--dim)}
+.contact .val{font-size:15px;word-break:break-all}
+.contact .hint{font-size:12px;color:var(--muted)}
+.ic{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.ic svg{width:18px;height:18px;fill:#fff}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,30px);opacity:0;background:var(--ok);color:#0d1017;font-weight:700;font-size:14px;padding:10px 18px;border-radius:8px;transition:.3s;z-index:50;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+footer{border-top:1px solid var(--line);padding:30px 0;color:var(--dim);font-size:13px;text-align:center}
+footer .k{color:var(--kw)}
+
+.reveal{opacity:0;transform:translateY(20px);transition:.7s}
+.reveal.in{opacity:1;transform:none}
+
+@media (max-width:600px){
+  section{padding:64px 0}
+  .lines{font-size:12.5px}
+  .ln{padding:0 10px}
+  .games{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
 </head>
 <body>
-  <h1>Merhaba, ben bir Roblox developer'ım</h1>
+
+<nav>
+  <div class="wrap">
+    <div class="dots"><i></i><i></i><i></i></div>
+    <a class="tab" href="#top"><b>main</b>.lua</a>
+    <a class="tab" href="#about"><b>about</b>.lua</a>
+    <a class="tab" href="#games"><b>projects</b>.lua</a>
+    <a class="tab" href="#contact"><b>contact</b>.lua</a>
+  </div>
+</nav>
+
+<main class="wrap" id="top">
+
+  <!-- ================= HERO ================= -->
+  <div class="hero">
+    <div class="path">ServerScriptService › Portfolio › main.lua</div>
+    <div class="code" id="typed"></div>
+    <div class="out" id="out">
+      <div class="c">-- Output</div>
+      <div class="ok">✓ module loaded: PAIISS42</div>
+      <div>&gt; Roblox Developer · Lead Scripter · Builder · UI &amp; Animation</div>
+    </div>
+    <div class="cta" id="cta">
+      <a class="btn primary" href="#games">dev:GetProjects()</a>
+      <a class="btn" href="#contact">dev:Contact()</a>
+    </div>
+  </div>
+
+  <!-- ================= ABOUT ================= -->
+  <section id="about" class="reveal">
+    <div class="sec-head"><h2><span class="kw">--</span> About Me</h2><span class="file">about.lua</span></div>
+    <div class="window">
+      <div class="bar">📄 about.lua</div>
+      <div class="lines" id="aboutLines"></div>
+    </div>
+  </section>
+
+  <!-- ================= GAMES ================= -->
+  <section id="games" class="reveal">
+    <div class="sec-head"><h2><span class="kw">--</span> Projects I've Worked On</h2><span class="file">projects.lua</span></div>
+    <div class="games" id="gameGrid"></div>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section id="contact" class="reveal">
+    <div class="sec-head"><h2><span class="kw">--</span> Contact</h2><span class="file">contact.lua · click to copy</span></div>
+    <div class="contacts" id="contactGrid"></div>
+  </section>
+
+</main>
+
+<footer>
+  <span class="k">return</span> dev &nbsp;·&nbsp; © <span id="yr"></span> PAIISS42 · built with Lua &amp; love
+</footer>
+
+<div class="toast" id="toast">Copied ✓</div>
+
+<script>
+/* =========================================================
+   EDIT HERE — all your info lives in this section
+   ========================================================= */
+const PROFILE = {
+  name: "PAIISS42",
+  title: "Roblox Developer",
+  about: [
+    "I build games and systems on Roblox.",
+    "Scripting, building, UI design and animation.",
+    "Open to new projects and team collaborations."
+  ],
+  skills: ["Luau", "Scripting", "Building", "UI Design", "Animation"]
+};
+
+const CONTACTS = {
+  discord: "ts67888",
+  youtube: "https://www.youtube.com/@PAIISS42",
+  gmail:   "ulashondu42@gmail.com",
+  roblox:  "https://www.roblox.com/users/886298788/profile"
+};
+
+/* Projects — copy a block to add a new one.
+   If image is empty and placeId is set, the thumbnail is fetched automatically.
+   url and placeId are optional. */
+const GAMES = [
+  {
+    name: "+1 Fish Evolve 🐟",
+    url: "https://www.roblox.com/games/107251558894565/1-Fish-Evolve",
+    placeId: "107251558894565",
+    image: "https://tr.rbxcdn.com/180DAY-7eb919365a728ab38b7f2f9d8d506d98/500/280/Image/Jpeg/noFilter",
+    description: "Gain +1 speed with every move and evolve from a tiny clownfish into legendary sea creatures. Every evolution unlocks new speed multipliers.",
+    roles: ["Scripter", "Builder"]
+  },
+  {
+    name: "Charge Your Energy ⚡",
+    url: "https://www.roblox.com/games/117171427755924/Charge-Your-Energy",
+    placeId: "117171427755924",
+    image: "",
+    description: "Charge up your energy, grow stronger and push your limits.",
+    roles: ["UI Design", "Scripter"]
+  },
+  {
+    name: "A-EXPO | Anatolia Creator Collective",
+    url: "https://www.roblox.com/communities/729654941/A-EXPO-Anatolia-Creator-Collective#!/about",
+    placeId: "",
+    image: "https://tr.rbxcdn.com/180DAY-c6a855e64ec8f38867326299143bf21e/150/150/Image/Png/noFilter",
+    fit: "contain",
+    description: "An Anatolia-based creator community hosting conferences, panels and meetups for developers, designers and content creators. I lead the scripting and direct the events.",
+    roles: ["Lead Scripter", "Director"],
+    tag: "Event Project",
+    linkText: "▶ View community"
+  },
+  {
+    name: "BeneVocon™",
+    url: "https://benevocon.com/home/",
+    placeId: "",
+    image: "https://benevocon.com/bv-site-assets/img/og-cover.jpg",
+    description: "A studio focused on quality and clarity. I work there on animation and UI art.",
+    roles: ["Animation", "UI Artist"],
+    tag: "Studio",
+    linkText: "▶ Visit website"
+  }
+];
+/* ========================================================= */
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+$("#yr").textContent = new Date().getFullYear();
+
+/* ---------- Hero typing ---------- */
+const tokens = [
+  ["kw","local "],["var","dev"],["op"," = "],["fn","require"],["op","("],
+  ["prop","game"],["op","."],["prop","ReplicatedStorage"],["op","."],["mod","PAIISS42"],["op",")"]
+];
+(function type(){
+  const el = $("#typed");
+  const caret = document.createElement("span"); caret.className = "caret";
+  el.appendChild(caret);
+  let t = 0, i = 0, span = null;
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function step(){
+    if (t >= tokens.length){ return finish(); }
+    if (!span){ span = document.createElement("span"); span.className = tokens[t][0]; el.insertBefore(span, caret); }
+    span.textContent += tokens[t][1][i++];
+    if (i >= tokens[t][1].length){ t++; i = 0; span = null; }
+    setTimeout(step, reduced ? 0 : 45 + Math.random()*55);
+  }
+  function finish(){
+    const lines = document.querySelectorAll("#out div");
+    lines.forEach((d, k) => setTimeout(() => d.classList.add("show"), 350 + k*450));
+    setTimeout(() => $("#cta").classList.add("show"), 350 + lines.length*450);
+  }
+  setTimeout(step, 500);
+})();
+
+/* ---------- About (as Lua code) ---------- */
+(function(){
+  const rows = [
+    `<span class="k">local</span> Developer = {}`,
+    ``,
+    `Developer.Name  = <span class="s">"${esc(PROFILE.name)}"</span>`,
+    `Developer.Role  = <span class="s">"${esc(PROFILE.title)}"</span>`,
+    `Developer.Skills = { ${PROFILE.skills.map(s=>`<span class="s">"${esc(s)}"</span>`).join(", ")} }`,
+    ``,
+    ...PROFILE.about.map(a => `<span class="cm">-- ${esc(a)}</span>`),
+    ``,
+    `<span class="k">return</span> Developer`
+  ];
+  $("#aboutLines").innerHTML = rows.map((r,i)=>`<span class="ln">${i+1}</span><span class="lc">${r||" "}</span>`).join("");
+})();
+
+/* ---------- Games ---------- */
+function placeholder(g){
+  return `<div class="ph"><strong>${esc(g.name)}</strong><span>${g.placeId && !g.image ? "loading image…" : esc(g.tag || "Roblox Project")}</span></div>`;
+}
+$("#gameGrid").innerHTML = GAMES.map((g, idx) => `
+  <article class="game">
+    <${g.url?"a":"div"} class="thumb" ${g.url?`href="${esc(g.url)}" target="_blank" rel="noopener"`:""} id="thumb${idx}">
+      ${g.image ? `<img src="${esc(g.image)}" alt="${esc(g.name)}" loading="lazy" onerror="this.remove()"${g.fit==="contain"?' class="contain"':""}>` : ""}
+      ${placeholder(g)}
+      <span class="tag">${g.tag ? esc(g.tag) : "ModuleScript"}</span>
+    </${g.url?"a":"div"}>
+    <div class="gbody">
+      <h3>${esc(g.name)}</h3>
+      <p>${esc(g.description)}</p>
+      <div class="role"><span class="p">role:</span>${g.roles.map(r=>`<span class="chip">"${esc(r)}"</span>`).join(`<span style="color:var(--muted)">, </span>`)}</div>
+      ${g.url ? `<a class="play" href="${esc(g.url)}" target="_blank" rel="noopener">${g.linkText || "▶ Play on Roblox"}</a>` : ""}
+    </div>
+  </article>`).join("");
+
+// No image set → try fetching the Roblox thumbnail (via roproxy)
+GAMES.forEach(async (g, idx) => {
+  const box = document.getElementById("thumb" + idx);
+  const ph = box.querySelector(".ph");
+  if (g.image){ ph.style.zIndex = -1; return; }
+  if (!g.placeId) return;
+  try{
+    const u = await fetch(`https://apis.roproxy.com/universes/v1/places/${g.placeId}/universe`).then(r=>r.json());
+    const th = await fetch(`https://thumbnails.roproxy.com/v1/games/multiget/thumbnails?universeIds=${u.universeId}&size=768x432&format=Png&countPerUniverse=1`).then(r=>r.json());
+    const src = th.data?.[0]?.thumbnails?.[0]?.imageUrl;
+    if (!src) throw 0;
+    const img = new Image(); img.alt = g.name; img.src = src;
+    img.onload = () => { box.prepend(img); ph.remove(); };
+    img.onerror = () => { ph.querySelector("span").textContent = "Roblox Experience"; };
+  }catch(e){
+    ph.querySelector("span").textContent = "Roblox Experience";
+  }
+});
+
+/* ---------- Contact ---------- */
+const ICONS = {
+  discord:`<svg viewBox="0 0 24 24"><path d="M20.3 4.4A19.6 19.6 0 0 0 15.5 3l-.6 1.2a18 18 0 0 0-5.8 0L8.5 3a19.6 19.6 0 0 0-4.8 1.4C.6 9-.2 13.5.5 18a19.8 19.8 0 0 0 6 3l1.3-2a12.8 12.8 0 0 1-2-1l.5-.4a14 14 0 0 0 12.1 0l.5.4c-.6.4-1.3.7-2 1l1.3 2a19.7 19.7 0 0 0 6-3c.5-5.2-.8-9.7-3.4-13.6zM8.7 15.3c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4zm6.6 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4z"/></svg>`,
+  youtube:`<svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>`,
+  roblox:`<svg viewBox="0 0 24 24"><path d="M5.2 1 1 18.8 18.8 23 23 5.2 5.2 1zm8.4 14.2-4.8-1.2 1.2-4.8 4.8 1.2-1.2 4.8z"/></svg>`,
+  gmail:`<svg viewBox="0 0 24 24"><path d="M22 6.2V18a2 2 0 0 1-2 2h-2.5V10.6L12 14.7l-5.5-4.1V20H4a2 2 0 0 1-2-2V6.2a2 2 0 0 1 3.2-1.6L12 9.7l6.8-5.1A2 2 0 0 1 22 6.2z"/></svg>`
+};
+const items = [
+  {key:"discord", label:"discord", val:CONTACTS.discord, color:"#5865F2"},
+  {key:"youtube", label:"youtube", val:CONTACTS.youtube, color:"#FF0000", link:CONTACTS.youtube},
+  {key:"gmail",   label:"gmail",   val:CONTACTS.gmail,   color:"#EA4335"},
+  {key:"roblox",  label:"roblox",  val:CONTACTS.roblox,  color:"#E2231A", link:CONTACTS.roblox, linkText:"open profile ↗"}
+];
+$("#contactGrid").innerHTML = items.map(c => `
+  <button class="contact" data-copy="${esc(c.val)}" type="button">
+    <div class="ic" style="background:${c.color}">${ICONS[c.key]}</div>
+    <div class="lbl">dev.${c.label}</div>
+    <div class="val">${esc(c.val)}</div>
+    <div class="hint">⧉ click to copy${c.link ? ` · <a href="${esc(c.link)}" target="_blank" rel="noopener" style="color:var(--fn)" onclick="event.stopPropagation()">${c.linkText || "open channel ↗"}</a>` : ""}</div>
+  </button>`).join("");
+
+const toast = $("#toast"); let tt;
+function showToast(msg){ toast.textContent = msg; toast.classList.add("show"); clearTimeout(tt); tt = setTimeout(()=>toast.classList.remove("show"), 1600); }
+async function copy(text){
+  try{ await navigator.clipboard.writeText(text); }
+  catch(e){
+    const ta = document.createElement("textarea"); ta.value = text; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); }catch(_){} ta.remove();
+  }
+  showToast("Copied ✓  " + text);
+}
+document.querySelectorAll(".contact").forEach(b => b.addEventListener("click", () => copy(b.dataset.copy)));
+
+/* ---------- Scroll reveal ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } }), {threshold:.12});
+document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+</script>
 </body>
 </html>
