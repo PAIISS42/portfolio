@@ -27,9 +27,8 @@ a{color:inherit;text-decoration:none}
 nav{position:sticky;top:0;z-index:10;background:rgba(13,16,23,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 nav .wrap{display:flex;align-items:center;gap:4px;height:48px;overflow-x:auto;scrollbar-width:none}
 nav .wrap::-webkit-scrollbar{display:none}
-.dots{display:flex;gap:6px;margin-right:14px;flex-shrink:0}
-.dots i{width:11px;height:11px;border-radius:50%;display:block}
-.dots i:nth-child(1){background:#ff5f57}.dots i:nth-child(2){background:#febc2e}.dots i:nth-child(3){background:#28c840}
+.brand{display:flex;align-items:center;gap:9px;margin-right:14px;flex-shrink:0;font-weight:800;font-size:13px;color:var(--text)}
+
 .tab{font-size:13px;color:var(--muted);padding:6px 12px;border-radius:6px;white-space:nowrap;transition:.2s}
 .tab:hover{color:var(--text);background:var(--panel)}
 .tab b{color:var(--fn);font-weight:500}
@@ -120,7 +119,7 @@ footer .k{color:var(--kw)}
 
 <nav>
   <div class="wrap">
-    <div class="dots"><i></i><i></i><i></i></div>
+    <a class="brand" href="#top">PAIISS42</a>
     <a class="tab" href="#top"><b>main</b>.lua</a>
     <a class="tab" href="#about"><b>about</b>.lua</a>
     <a class="tab" href="#games"><b>projects</b>.lua</a>
@@ -220,8 +219,7 @@ const GAMES = [
     name: "A-EXPO | Anatolia Creator Collective",
     url: "https://www.roblox.com/communities/729654941/A-EXPO-Anatolia-Creator-Collective#!/about",
     placeId: "",
-    image: "https://tr.rbxcdn.com/180DAY-c6a855e64ec8f38867326299143bf21e/150/150/Image/Png/noFilter",
-    fit: "contain",
+    image: "https://tr.rbxcdn.com/180DAY-40aae458f328d8187d3122e120787e80/1440/456/Image/Png/noFilter",
     description: "An Anatolia-based creator community hosting conferences, panels and meetups for developers, designers and content creators. I lead the scripting and direct the events.",
     roles: ["Lead Scripter", "Director"],
     tag: "Event Project",
@@ -231,7 +229,7 @@ const GAMES = [
     name: "BeneVocon™",
     url: "https://benevocon.com/home/",
     placeId: "",
-    image: "https://benevocon.com/bv-site-assets/img/og-cover.jpg",
+    image: "https://pictureurl.com/api/storage/file?key=u%2Fanon%2F04ac38f2-7826-4844-90d2-1167f63d76cc-Ekran_g_r_nt_s__2026-10-09_062435.png",
     description: "A studio focused on quality and clarity. I work there on animation and UI art.",
     roles: ["Animation", "UI Artist"],
     tag: "Studio",
