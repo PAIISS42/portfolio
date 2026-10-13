@@ -41,12 +41,21 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--display)
   transition:box-shadow .7s ease,transform .45s cubic-bezier(.5,-0.4,.6,1.2)}
 .bloom{position:absolute;left:-220px;right:-220px;top:-200px;bottom:-120px;transform:translateZ(1px);pointer-events:none;
   background:radial-gradient(closest-side,rgba(150,195,255,.34),rgba(110,160,255,.12) 55%,rgba(90,140,255,0));opacity:.8;transition:opacity .7s,transform .9s cubic-bezier(.2,1.3,.4,1)}
-.light img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.42;transform:scale(1.12);
-  mix-blend-mode:multiply;filter:saturate(.75) contrast(1.08);
-  -webkit-mask-image:radial-gradient(ellipse 70% 62% at 50% 46%,#000 30%,rgba(0,0,0,.55) 62%,transparent 100%);mask-image:radial-gradient(ellipse 70% 62% at 50% 46%,#000 30%,rgba(0,0,0,.55) 62%,transparent 100%);
-  -webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-position:center;mask-position:center;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
-  animation:peekDrift 14s ease-in-out infinite alternate;
-  transition:opacity .35s,transform .6s ease,filter .5s,-webkit-mask-size .6s ease,mask-size .6s ease}
+.light .ghost{position:absolute;left:-22%;top:-12%;width:100%;height:auto;aspect-ratio:1;object-fit:cover;border-radius:22%;
+  opacity:.09;transform:rotate(-9deg) scale(1.02);mix-blend-mode:multiply;filter:saturate(.5) blur(2px);pointer-events:none;
+  -webkit-mask-image:radial-gradient(circle at 38% 38%,#000 20%,transparent 70%);mask-image:radial-gradient(circle at 38% 38%,#000 20%,transparent 70%);
+  will-change:opacity,transform;transition:opacity 1.1s cubic-bezier(.22,1,.36,1),transform 1.6s cubic-bezier(.22,1,.36,1)}
+.portal.open .light .ghost{opacity:.14;transform:rotate(-6deg) scale(1.06)}
+.portal.charge .light .ghost,.portal.charge .light .lname{opacity:0;transition:opacity .9s .2s}
+.light .lname{position:absolute;left:8%;right:8%;top:71%;text-align:center;font:300 19px/1.25 var(--display);letter-spacing:.02em;color:#18202e;
+  opacity:.4;transform:translateY(5px);will-change:opacity,transform;transition:opacity .8s cubic-bezier(.22,1,.36,1) .06s,transform 1s cubic-bezier(.22,1,.36,1) .06s}
+.light .lname small{display:block;margin-top:8px;font:500 9px/1 var(--mono);letter-spacing:.24em;text-transform:uppercase;color:#4a5872}
+.portal.open .light .lname{opacity:.92;transform:none}
+.light .ico{position:absolute;left:50%;top:45%;width:62%;height:auto;aspect-ratio:1;object-fit:cover;border-radius:22%;
+  opacity:.4;transform:translate(-50%,-50%) scale(.94);mix-blend-mode:multiply;filter:saturate(.7) contrast(1.05);
+  box-shadow:0 6px 18px rgba(20,40,90,0),0 0 0 1px rgba(255,255,255,0);will-change:opacity,transform;
+  animation:iconFloat 7s ease-in-out infinite alternate;
+  transition:opacity .9s cubic-bezier(.22,1,.36,1),transform 1.1s cubic-bezier(.22,1,.36,1),filter .9s cubic-bezier(.22,1,.36,1),box-shadow .9s cubic-bezier(.22,1,.36,1)}
 .peek{position:absolute;left:-230px;right:-230px;top:4%;bottom:0;transform:translateZ(1.5px);pointer-events:none;
   background-size:cover;background-position:center;opacity:.42;filter:blur(1px) saturate(1.15) brightness(1.35);transition:opacity .7s;
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 34%,#000 66%,transparent 100%),linear-gradient(180deg,transparent 0,#000 18%,#000 82%,transparent 100%);-webkit-mask-composite:source-in;
@@ -68,9 +77,9 @@ body.starring .portal{opacity:0!important;transition:opacity .5s ease!important}
 .meta span{font:400 13px/1 var(--mono);letter-spacing:.14em;color:var(--dim)}
 .meta b{font:300 26px/1 var(--display);letter-spacing:-.01em;color:var(--fg);white-space:nowrap}
 
-.portal.open .light img{opacity:.96;transform:scale(1.07);filter:none;-webkit-mask-size:240% 240%;mask-size:240% 240%;
-  transition:opacity .4s .12s,transform 1s cubic-bezier(.2,1.2,.4,1) .1s,filter .5s,-webkit-mask-size .7s cubic-bezier(.2,1,.3,1),mask-size .7s cubic-bezier(.2,1,.3,1)}
-@keyframes peekDrift{from{translate:0 1.5%}to{translate:0 -2.5%}}
+.portal.open .light .ico{opacity:1;transform:translate(-50%,-50%) scale(1);filter:saturate(1) contrast(1);box-shadow:0 14px 40px rgba(20,40,90,.35),0 0 0 1px rgba(255,255,255,.6);
+  transition:opacity .7s cubic-bezier(.22,1,.36,1),transform 1.1s cubic-bezier(.22,1,.36,1),filter .8s cubic-bezier(.22,1,.36,1),box-shadow 1s cubic-bezier(.22,1,.36,1)}
+@keyframes iconFloat{from{translate:0 4px}to{translate:0 -6px}}
 .portal.open .light{box-shadow:0 0 26px 4px rgba(235,244,255,.95),0 0 80px 10px rgba(150,195,255,.55);transform:translateZ(2px) scale(1.035);
   transition:box-shadow .7s ease,transform .8s cubic-bezier(.3,1.9,.45,1)}
 .portal.open .bloom{opacity:1;transform:translateZ(1px) scale(1.08)}
@@ -79,7 +88,7 @@ body.starring .portal{opacity:0!important;transition:opacity .5s ease!important}
 
 .portal.charge .bloom{opacity:1;transform:translateZ(1px) scale(1.5)}
 .portal.charge .core{opacity:1}
-.portal.charge .light img{opacity:0;transition:opacity .9s .2s}
+.portal.charge .light .ico{opacity:0;transition:opacity .9s .2s}
 .portal:focus-visible .light{outline:2px solid #7ab8ff;outline-offset:8px}
 
 /* ---------- HUD ---------- */
@@ -287,7 +296,7 @@ body.boot .brand,body.boot .hint,body.boot .dial{opacity:0}
 @media (prefers-reduced-motion:reduce){
   #panel .rv,#panel.show .rv,.bignum{animation:none!important;opacity:1;transform:none}
   #inside .kb,#inside.opening .win,#inside.closing .win,.portal.charge .light{animation:none}
-  .light,.portal.open .light,.light img,#panel,#panel.show{transition-duration:.2s;transition-timing-function:ease;transition-delay:0s}
+  .light,.portal.open .light,.light .ico,#panel,#panel.show{transition-duration:.2s;transition-timing-function:ease;transition-delay:0s}
 }
 </style>
 
@@ -368,6 +377,7 @@ body.boot .brand,body.boot .hint,body.boot .dial{opacity:0}
    PROJECTS — one door per project. Copy a block to add another.
    link / linkText : where the button goes and what it says
    src / placeId   : the real screenshot (URL) or a Roblox place id to fetch the thumbnail;
+   inside the door : the game icon (from placeId), the community icon (groupId) or iconSrc;
                      until it loads (or if it is blocked), a cover is drawn from accent + motif
    motif           : fish, bolt, hotel, expo, studio
    ===================================================================== */
@@ -399,7 +409,7 @@ const PROJECTS = [
     desc:"An Anatolia-based creator community hosting conferences, panels and meetups for developers, designers and content creators. I lead the scripting and direct the events.",
     features:[], tags:["Lead Scripter","Director"], stats:{},
     link:"https://www.roblox.com/communities/729654941/A-EXPO-Anatolia-Creator-Collective#!/about", linkText:"View community",
-    image:"", src:"https://tr.rbxcdn.com/180DAY-40aae458f328d8187d3122e120787e80/1440/456/Image/Png/noFilter", placeId:"", accent:"#b98cff", motif:"expo"},
+    image:"", src:"https://tr.rbxcdn.com/180DAY-40aae458f328d8187d3122e120787e80/1440/456/Image/Png/noFilter", placeId:"", groupId:"729654941", accent:"#b98cff", motif:"expo"},
   { title:"BeneVocon", genre:"Studio",
     tagline:"A studio focused on quality and clarity.",
     role:"Animation · UI Artist",
@@ -476,7 +486,7 @@ function drawCover(w,h,p,noText){
   x.fillText(t,pad,h-pad);
   return c.toDataURL('image/jpeg',.9);
 }
-function buildCovers(){PROJECTS.forEach(p=>{p.thumb=p.image||drawCover(600,920,p,true);p.wide=p.image||drawCover(1600,1000,p)})}
+function buildCovers(){PROJECTS.forEach(p=>{p.icon=drawCover(512,512,p,true);p.wide=p.image||drawCover(1600,1000,p)})}
 
 
 /* ---------- world constants ---------- */
@@ -493,18 +503,32 @@ function bakePeek(i,src){const el=document.querySelectorAll('.peek')[i];if(el)el
    Covers stay up until a real image has actually loaded, and remain if the host blocks it. */
 function useReal(i,url){
   const p=PROJECTS[i],im=new Image();im.decoding='async';
-  im.onload=()=>{p.real=true;p.thumb=p.wide=url;const pt=portals[i];if(pt)pt.querySelector('.light img').src=url;bakePeek(i,im);
+  im.onload=()=>{p.real=true;p.thumb=p.wide=url;bakePeek(i,im);
     if(zoomed===i)insideImg.src=url};
   im.src=url;
 }
-function loadRealImages(){
+function useIcon(i,url){const im=new Image();im.onload=()=>{PROJECTS[i].icon=url;const pt=portals[i];if(pt)pt.querySelector('.light .ico').src=url;pt.querySelector('.light .ghost').src=url};im.src=url}
+async function universeOf(placeId){if(!universeOf.c)universeOf.c={};if(!universeOf.c[placeId])universeOf.c[placeId]=fetch(`https://apis.roproxy.com/universes/v1/places/${placeId}/universe`).then(r=>r.json()).then(u=>u.universeId);return universeOf.c[placeId]}
+function loadIcons(){
+  PROJECTS.forEach(async(p,i)=>{
+    try{
+      if(p.iconSrc){useIcon(i,p.iconSrc);return}
+      let api=null;
+      if(p.placeId){const uid=await universeOf(p.placeId);api=`https://thumbnails.roproxy.com/v1/games/icons?universeIds=${uid}&size=512x512&format=Png&isCircular=false`}
+      else if(p.groupId)api=`https://thumbnails.roproxy.com/v1/groups/icons?groupIds=${p.groupId}&size=420x420&format=Png&isCircular=false`;
+      if(!api)return;
+      const j=await fetch(api).then(r=>r.json());const src=j.data&&j.data[0]&&j.data[0].imageUrl;if(src)useIcon(i,src);
+    }catch(_){}
+  });
+}
+function loadRealImages(){loadIcons();
   PROJECTS.forEach(async(p,i)=>{
     if(p.image)return;
     if(p.src){useReal(i,p.src);if(!p.placeId)return}
     if(!p.placeId)return;
     try{
-      const u=await fetch(`https://apis.roproxy.com/universes/v1/places/${p.placeId}/universe`).then(r=>r.json());
-      const th=await fetch(`https://thumbnails.roproxy.com/v1/games/multiget/thumbnails?universeIds=${u.universeId}&size=768x432&format=Png&countPerUniverse=1`).then(r=>r.json());
+      const uid=await universeOf(p.placeId);
+      const th=await fetch(`https://thumbnails.roproxy.com/v1/games/multiget/thumbnails?universeIds=${uid}&size=768x432&format=Png&countPerUniverse=1`).then(r=>r.json());
       const src=th.data&&th.data[0]&&th.data[0].thumbnails&&th.data[0].thumbnails[0]&&th.data[0].thumbnails[0].imageUrl;
       if(src&&!p.real)useReal(i,src);
     }catch(_){}
@@ -991,7 +1015,7 @@ PROJECTS.forEach((p,i)=>{
       <div class="trail" style="left:${-DW/2}px;top:${FLOOR-DH-720}px"></div>
       <div class="portal" tabindex="0" role="button" aria-label="${p.title}" style="left:${-DW/2}px;top:${FLOOR-DH}px">
         <div class="bloom"></div><div class="peek"></div>
-        <div class="light"><img alt="" src="${p.thumb}"><div class="core"></div></div>
+        <div class="light"><img class="ghost" alt="" src="${p.icon}"><img class="ico" alt="" src="${p.icon}"><div class="lname">${p.title}<small>${p.genre}</small></div><div class="core"></div></div>
         <div class="meta"><b>${p.title}</b><span>${pad(i+1)}</span></div>
       </div>
     </div>`);
@@ -1122,8 +1146,8 @@ cpanel.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',asy
 }));
 
 /* redraw covers once the web fonts are in, so titles on the covers use them */
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(PROJECTS.some(p=>!p.real)){PROJECTS.forEach(p=>{if(!p.real){const r=p.real;p.thumb=drawCover(600,920,p,true);p.wide=drawCover(1600,1000,p)}});
-  PROJECTS.forEach((p,i)=>{if(p.real)return;const pt=portals[i];pt.querySelector('img').src=p.thumb;bakePeek(i,p.wide)})}});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(PROJECTS.some(p=>!p.real)){PROJECTS.forEach(p=>{if(!p.real){const r=p.real;p.wide=drawCover(1600,1000,p)}});
+  PROJECTS.forEach((p,i)=>{if(p.real)return;bakePeek(i,p.wide)})}});
 loadRealImages();
 
 /* ---------- camera state ---------- */
