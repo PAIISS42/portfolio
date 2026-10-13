@@ -1,4 +1,3 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>PAIISS42</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,9 +41,8 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--display)
 .light img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.12);
   transition:opacity .35s,transform .6s ease}
 .peek{position:absolute;left:-230px;right:-230px;top:4%;bottom:0;transform:translateZ(1.5px);pointer-events:none;
-  background-size:cover;background-position:center;opacity:.42;filter:blur(1px) saturate(1.15) brightness(1.35);transition:opacity .7s;
-  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 34%,#000 66%,transparent 100%),linear-gradient(180deg,transparent 0,#000 18%,#000 82%,transparent 100%);-webkit-mask-composite:source-in;
-  mask-image:linear-gradient(90deg,transparent 0,#000 34%,#000 66%,transparent 100%),linear-gradient(180deg,transparent 0,#000 18%,#000 82%,transparent 100%);mask-composite:intersect}
+  opacity:.42;transition:opacity .7s}
+.peek canvas{width:100%;height:100%;display:block}
 .portal.open .peek{opacity:.7}
 .portal.charge .peek{opacity:0}
 .portal{transition:opacity .8s ease}
@@ -350,8 +348,8 @@ body.boot .brand,body.boot .hint,body.boot .dial{opacity:0}
 /* =====================================================================
    PROJECTS — one door per project. Copy a block to add another.
    link / linkText : where the button goes and what it says
-   image           : a screenshot as a data: URI (external image URLs are blocked here);
-                     if empty, a cover is drawn from accent + motif
+   src / placeId   : the real screenshot (URL) or a Roblox place id to fetch the thumbnail;
+                     until it loads (or if it is blocked), a cover is drawn from accent + motif
    motif           : fish, bolt, hotel, expo, studio
    ===================================================================== */
 const PROJECTS = [
@@ -361,35 +359,35 @@ const PROJECTS = [
     desc:"Gain +1 speed with every move and evolve from a tiny clownfish into legendary sea creatures. Every evolution unlocks new speed multipliers.",
     features:[], tags:["Scripter","Builder"], stats:{},
     link:"https://www.roblox.com/games/107251558894565/1-Fish-Evolve", linkText:"Play on Roblox",
-    image:"", accent:"#46b9ff", motif:"fish"},
+    image:"", src:"https://tr.rbxcdn.com/180DAY-7eb919365a728ab38b7f2f9d8d506d98/500/280/Image/Jpeg/noFilter", placeId:"107251558894565", accent:"#46b9ff", motif:"fish"},
   { title:"Charge Your Energy", genre:"Roblox Experience",
     tagline:"Charge up, grow stronger, push your limits.",
     role:"UI Design · Scripter",
     desc:"Charge up your energy, grow stronger and push your limits.",
     features:[], tags:["UI Design","Scripter"], stats:{},
     link:"https://www.roblox.com/games/117171427755924/Charge-Your-Energy", linkText:"Play on Roblox",
-    image:"", accent:"#ffd23f", motif:"bolt"},
+    image:"", src:"", placeId:"117171427755924", accent:"#ffd23f", motif:"bolt"},
   { title:"Anomaly Hotel", genre:"Roblox Experience",
     tagline:"Spot what's wrong before it's too late.",
     role:"Scripter · UI Design",
     desc:"Explore the hotel, spot the anomalies and make it out. Spot what's wrong before it's too late.",
     features:[], tags:["Scripter","UI Design"], stats:{},
     link:"https://www.roblox.com/games/95065711561383/Anomaly-Hotel", linkText:"Play on Roblox",
-    image:"", accent:"#ff5f6d", motif:"hotel"},
+    image:"", src:"", placeId:"95065711561383", accent:"#ff5f6d", motif:"hotel"},
   { title:"A-EXPO", genre:"Event Project",
     tagline:"Anatolia Creator Collective.",
     role:"Lead Scripter · Director",
     desc:"An Anatolia-based creator community hosting conferences, panels and meetups for developers, designers and content creators. I lead the scripting and direct the events.",
     features:[], tags:["Lead Scripter","Director"], stats:{},
     link:"https://www.roblox.com/communities/729654941/A-EXPO-Anatolia-Creator-Collective#!/about", linkText:"View community",
-    image:"", accent:"#b98cff", motif:"expo"},
+    image:"", src:"https://tr.rbxcdn.com/180DAY-40aae458f328d8187d3122e120787e80/1440/456/Image/Png/noFilter", placeId:"", accent:"#b98cff", motif:"expo"},
   { title:"BeneVocon", genre:"Studio",
     tagline:"A studio focused on quality and clarity.",
     role:"Animation · UI Artist",
     desc:"A studio focused on quality and clarity. I work there on animation and UI art.",
     features:[], tags:["Animation","UI Artist"], stats:{},
     link:"https://benevocon.com/home/", linkText:"Visit website",
-    image:"", accent:"#5ee6b0", motif:"studio"},
+    image:"", src:"https://pictureurl.com/api/storage/file?key=u%2Fanon%2F04ac38f2-7826-4844-90d2-1167f63d76cc-Ekran_g_r_nt_s__2026-10-09_062435.png", placeId:"", accent:"#5ee6b0", motif:"studio"},
 ];
 
 /* contact links (top-right "Contact" button) */
@@ -470,13 +468,49 @@ const between=(a,b)=>a+rr2()*(b-a);
 const D2R=Math.PI/180;
 
 buildCovers();
+/* the glimpse of the project beside each door: blur/tone/feathered edges baked once into a small canvas
+   (live CSS filters + masks on 3D-transformed layers were a big GPU cost) */
+function bakePeek(i,src){
+  const im=src instanceof Image?src:Object.assign(new Image(),{src});
+  const go=()=>{const slot=document.querySelectorAll('.peek canvas')[i];if(!slot)return;const c=slot.getContext('2d'),W=slot.width,H=slot.height;
+    c.globalCompositeOperation='source-over';c.clearRect(0,0,W,H);
+    const iw=im.naturalWidth||im.width,ih=im.naturalHeight||im.height;if(!iw||!ih)return;const k=Math.max(W/iw,H/ih);
+    try{c.filter='blur(1px) saturate(1.15) brightness(1.35)'}catch(_){}
+    c.drawImage(im,(W-iw*k)/2,(H-ih*k)/2,iw*k,ih*k);c.filter='none';
+    c.globalCompositeOperation='destination-in';
+    let g=c.createLinearGradient(0,0,W,0);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(.34,'#000');g.addColorStop(.66,'#000');g.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=g;c.fillRect(0,0,W,H);
+    g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(.18,'#000');g.addColorStop(.82,'#000');g.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=g;c.fillRect(0,0,W,H);
+    c.globalCompositeOperation='source-over'};
+  if(im.complete&&im.naturalWidth)go();else im.addEventListener('load',go,{once:true});
+}
+/* real screenshots: same sources as the old site (direct URL, or the Roblox thumbnail via roproxy).
+   Covers stay up until a real image has actually loaded, and remain if the host blocks it. */
+function useReal(i,url){
+  const p=PROJECTS[i],im=new Image();im.decoding='async';
+  im.onload=()=>{p.real=true;p.thumb=p.wide=url;const pt=portals[i];if(pt)pt.querySelector('.light img').src=url;bakePeek(i,im);
+    if(zoomed===i)insideImg.src=url};
+  im.src=url;
+}
+function loadRealImages(){
+  PROJECTS.forEach(async(p,i)=>{
+    if(p.image)return;
+    if(p.src){useReal(i,p.src);if(!p.placeId)return}
+    if(!p.placeId)return;
+    try{
+      const u=await fetch(`https://apis.roproxy.com/universes/v1/places/${p.placeId}/universe`).then(r=>r.json());
+      const th=await fetch(`https://thumbnails.roproxy.com/v1/games/multiget/thumbnails?universeIds=${u.universeId}&size=768x432&format=Png&countPerUniverse=1`).then(r=>r.json());
+      const src=th.data&&th.data[0]&&th.data[0].thumbnails&&th.data[0].thumbnails[0]&&th.data[0].thumbnails[0].imageUrl;
+      if(src&&!p.real)useReal(i,src);
+    }catch(_){}
+  });
+}
 
 function put(cls,css,tf,html){const el=document.createElement('div');el.className=cls;Object.assign(el.style,css);el.style.transform=tf;if(html)el.innerHTML=html;camera.appendChild(el);return el}
 
 /* ---------- WebGL world: dark sky, endless grid baseplate, landing smoke ---------- */
 let polarisObj=null;const starFx={charge:0,pulseT:-1,dim:0,absorbT:-99,skyT:()=>0};
 let gl=null,scene3=null,cam3=null,floorU=null,smoke=null,net=null,sky=null;const doorGlow=new Array(N).fill(0);
-const doorLights=[];
+const doorLights=[];let setGLRatio=null;
 if(window.THREE){
   gl=new THREE.WebGLRenderer({canvas:$('#gl'),antialias:true,powerPreference:'high-performance'});
   gl.setPixelRatio(Math.min(devicePixelRatio||1,1.25));
@@ -729,7 +763,7 @@ if(window.THREE){
   const backPts=new THREE.Points(sg,smokeMat(0));backPts.frustumCulled=false;scene3.add(backPts);
   const fxR=new THREE.WebGLRenderer({canvas:$('#fx'),alpha:true,antialias:false});
   fxR.setPixelRatio(Math.min(devicePixelRatio||1,1.25));fxR.setClearColor(0x000000,0);
-  const fxScene=new THREE.Scene();const frontPts=new THREE.Points(sg,smokeMat(1));frontPts.frustumCulled=false;fxScene.add(frontPts);
+  let fxDirty=true;const fxScene=new THREE.Scene();const frontPts=new THREE.Points(sg,smokeMat(1));frontPts.frustumCulled=false;fxScene.add(frontPts);
 
   /* plexus lines between nearby lead dots (CPU mirror of the ring motion) */
   const MAXL=N*LEADS*2;
@@ -831,7 +865,7 @@ if(window.THREE){
   })();
   const R01=(a,b)=>a+Math.random()*(b-a);
   smoke={u:smokeU,fxR,
-    render(nowS){updatePlexus(nowS);fxR.render(fxScene,cam3)},
+    render(nowS){const busy=bursts.some(b=>nowS-b<9);if(!busy){if(fxDirty){fxR.clear();fxDirty=false}return}fxDirty=true;updatePlexus(nowS);fxR.render(fxScene,cam3)},
     emit(i,nowS){
       const C=doorC[i],T=doorT[i];const Nn=new THREE.Vector3(-C.x,0,-C.z).normalize();
       bursts[i]=nowS;
@@ -919,6 +953,17 @@ if(window.THREE){
 
   const fit=()=>{gl.setSize(innerWidth,innerHeight,false);smoke.fxR.setSize(innerWidth,innerHeight,false);smokeU.uHalfH.value=gl.getDrawingBufferSize(new THREE.Vector2()).y/2;net.setHalf(smokeU.uHalfH.value)};
   addEventListener('resize',fit);fit();
+  setGLRatio=d=>{gl.setPixelRatio(d);smoke.fxR.setPixelRatio(d);smokeU.uPx.value=d;fit()};
+}
+/* adaptive resolution: if frames run long, render the WebGL layers at a lower pixel ratio (and recover when there's headroom) */
+const Q={base:Math.min(devicePixelRatio||1,1.25),d:Math.min(devicePixelRatio||1,1.25),acc:0,n:0,t:0,good:0};
+function qualityTick(dtMs){
+  if(!setGLRatio||sceneHidden||dtMs>120||document.hidden)return;
+  Q.acc+=dtMs;Q.n++;Q.t+=dtMs;if(Q.t<1200)return;
+  const avg=Q.acc/Q.n;Q.acc=Q.n=Q.t=0;
+  if(avg>20&&Q.d>.55){Q.d=Math.max(.55,+(Q.d-.15).toFixed(2));Q.good=0;setGLRatio(Q.d)}
+  else if(avg<13.5&&Q.d<Q.base){if(++Q.good>=3){Q.good=0;Q.d=Math.min(Q.base,+(Q.d+.1).toFixed(2));setGLRatio(Q.d)}}
+  else Q.good=0;
 }
 const S3=window.THREE?new THREE.Matrix4().makeScale(1,-1,1):null;
 const mT=S3&&new THREE.Matrix4(),mX=S3&&new THREE.Matrix4(),mY=S3&&new THREE.Matrix4(),V3=S3&&new THREE.Matrix4();
@@ -950,12 +995,12 @@ PROJECTS.forEach((p,i)=>{
     <div class="float" style="transform:translateY(-4000px)">
       <div class="trail" style="left:${-DW/2}px;top:${FLOOR-DH-720}px"></div>
       <div class="portal" tabindex="0" role="button" aria-label="${p.title}" style="left:${-DW/2}px;top:${FLOOR-DH}px">
-        <div class="bloom"></div><div class="peek"></div>
+        <div class="bloom"></div><div class="peek"><canvas width="380" height="221"></canvas></div>
         <div class="light"><img alt="" src="${p.thumb}"><div class="core"></div></div>
         <div class="meta"><b>${p.title}</b><span>${pad(i+1)}</span></div>
       </div>
     </div>`);
-  floats.push(slot.querySelector('.float'));trails.push(slot.querySelector('.trail'));slot.querySelector('.peek').style.backgroundImage=`url(${p.wide})`;
+  floats.push(slot.querySelector('.float'));trails.push(slot.querySelector('.trail'));bakePeek(i,p.wide);
   const portal=slot.querySelector('.portal');portals.push(portal);
   bindPortal(portal,i);
 });
@@ -1082,8 +1127,9 @@ cpanel.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',asy
 }));
 
 /* redraw covers once the web fonts are in, so titles on the covers use them */
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(PROJECTS.some(p=>!p.image)){buildCovers();
-  PROJECTS.forEach((p,i)=>{const pt=portals[i];pt.querySelector('img').src=p.thumb;pt.querySelector('.peek').style.backgroundImage=`url(${p.wide})`})}});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(PROJECTS.some(p=>!p.real)){PROJECTS.forEach(p=>{if(!p.real){const r=p.real;p.thumb=drawCover(600,920,p);p.wide=drawCover(1600,1000,p)}});
+  PROJECTS.forEach((p,i)=>{if(p.real)return;const pt=portals[i];pt.querySelector('img').src=p.thumb;bakePeek(i,p.wide)})}});
+loadRealImages();
 
 /* ---------- camera state ---------- */
 let P=800, yaw=0, yawV=0, yawTarget=0, pitch=1;
@@ -1407,6 +1453,7 @@ function starTick(now,o){
 const facing=$('#facing');let lastFace=-1;const last={p:'',c:'',s:'',f:''};
 let introStarted=false;
 function tick(now){
+  qualityTick(now-(last.q||now));last.q=now;
   let z=0,dy=0,Pe=P,sx=0,sy=0,rz=0,sc=1,boost=0,fl=0,wI=0,wDir=1,tun=0;
   const tt=now/1000;
   checkDrops(now);
@@ -1493,5 +1540,3 @@ requestAnimationFrame(tick);
 setTimeout(()=>{(window.requestIdleCallback||setTimeout)(()=>gem.prewarm())},1800);
 document.body.classList.add('boot');requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove('boot')));
 </script>
-
-</body></html>
