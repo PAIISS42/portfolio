@@ -1,3 +1,6 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>PAIISS42</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,11 +41,16 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--display)
   transition:box-shadow .7s ease,transform .45s cubic-bezier(.5,-0.4,.6,1.2)}
 .bloom{position:absolute;left:-220px;right:-220px;top:-200px;bottom:-120px;transform:translateZ(1px);pointer-events:none;
   background:radial-gradient(closest-side,rgba(150,195,255,.34),rgba(110,160,255,.12) 55%,rgba(90,140,255,0));opacity:.8;transition:opacity .7s,transform .9s cubic-bezier(.2,1.3,.4,1)}
-.light img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.12);
-  transition:opacity .35s,transform .6s ease}
+.light img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.42;transform:scale(1.12);
+  mix-blend-mode:multiply;filter:saturate(.75) contrast(1.08);
+  -webkit-mask-image:radial-gradient(ellipse 70% 62% at 50% 46%,#000 30%,rgba(0,0,0,.55) 62%,transparent 100%);mask-image:radial-gradient(ellipse 70% 62% at 50% 46%,#000 30%,rgba(0,0,0,.55) 62%,transparent 100%);
+  -webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-position:center;mask-position:center;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  animation:peekDrift 14s ease-in-out infinite alternate;
+  transition:opacity .35s,transform .6s ease,filter .5s,-webkit-mask-size .6s ease,mask-size .6s ease}
 .peek{position:absolute;left:-230px;right:-230px;top:4%;bottom:0;transform:translateZ(1.5px);pointer-events:none;
-  opacity:.42;transition:opacity .7s}
-.peek canvas{width:100%;height:100%;display:block}
+  background-size:cover;background-position:center;opacity:.42;filter:blur(1px) saturate(1.15) brightness(1.35);transition:opacity .7s;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 34%,#000 66%,transparent 100%),linear-gradient(180deg,transparent 0,#000 18%,#000 82%,transparent 100%);-webkit-mask-composite:source-in;
+  mask-image:linear-gradient(90deg,transparent 0,#000 34%,#000 66%,transparent 100%),linear-gradient(180deg,transparent 0,#000 18%,#000 82%,transparent 100%);mask-composite:intersect}
 .portal.open .peek{opacity:.7}
 .portal.charge .peek{opacity:0}
 .portal{transition:opacity .8s ease}
@@ -60,7 +68,9 @@ body.starring .portal{opacity:0!important;transition:opacity .5s ease!important}
 .meta span{font:400 13px/1 var(--mono);letter-spacing:.14em;color:var(--dim)}
 .meta b{font:300 26px/1 var(--display);letter-spacing:-.01em;color:var(--fg);white-space:nowrap}
 
-.portal.open .light img{opacity:.94;transform:scale(1);transition:opacity .4s .12s,transform 1s cubic-bezier(.2,1.2,.4,1) .1s}
+.portal.open .light img{opacity:.96;transform:scale(1.07);filter:none;-webkit-mask-size:240% 240%;mask-size:240% 240%;
+  transition:opacity .4s .12s,transform 1s cubic-bezier(.2,1.2,.4,1) .1s,filter .5s,-webkit-mask-size .7s cubic-bezier(.2,1,.3,1),mask-size .7s cubic-bezier(.2,1,.3,1)}
+@keyframes peekDrift{from{translate:0 1.5%}to{translate:0 -2.5%}}
 .portal.open .light{box-shadow:0 0 26px 4px rgba(235,244,255,.95),0 0 80px 10px rgba(150,195,255,.55);transform:translateZ(2px) scale(1.035);
   transition:box-shadow .7s ease,transform .8s cubic-bezier(.3,1.9,.45,1)}
 .portal.open .bloom{opacity:1;transform:translateZ(1px) scale(1.08)}
@@ -165,7 +175,13 @@ body.starring .dial,body.starring .hint{opacity:0;pointer-events:none;transition
 @keyframes riseSoft{from{opacity:0;transform:translate3d(0,18px,0)}to{opacity:1;transform:none}}
 #about.leaving .rv2{animation:sink .35s cubic-bezier(.5,0,.75,0) both}
 
-@media (max-width:720px){.ab-grid{grid-template-columns:1fr}.ab-text{font-size:16px}#about .back{left:16px}}
+#about .topfade{position:fixed;left:0;right:0;top:0;height:calc(86px + env(safe-area-inset-top,0px));z-index:2;pointer-events:none;
+  background:linear-gradient(#04060b 50%,rgba(4,6,11,0))}
+#about .back{z-index:3}
+@media (max-width:720px){.ab-grid{grid-template-columns:1fr}.ab-text{font-size:16px}#about .back{left:16px}
+  #gemc{height:44vh;top:calc(40px + env(safe-area-inset-top,0px))}
+  .ab-inner{padding-top:calc(42vh + env(safe-area-inset-top,0px));gap:18px}
+  #about h1{font-size:clamp(44px,13vw,64px)}}
 
 /* ---------- inside a door: a dark project room ---------- */
 #inside{position:fixed;inset:0;z-index:3;opacity:0;pointer-events:none;overflow:hidden;cursor:zoom-out;background-color:#06070a;
@@ -259,7 +275,8 @@ body.boot .brand,body.boot .hint,body.boot .dial{opacity:0}
 .dial{transition:opacity .9s 1s}
 
 @media (max-width:720px){
-  .brand{left:16px}.hint{right:16px}
+  .brand{left:16px}.hint{right:16px;top:calc(98px + env(safe-area-inset-top,0px));font-size:10px}
+  .brand span{max-width:190px;line-height:1.6;margin-top:8px;font-size:10px}
   .dial{gap:10px}.facing{min-width:0}
   #panel{top:auto;left:0;width:auto;height:62%;border-left:0;border-top:1px solid rgba(255,255,255,.1);transform:translateY(102%)}
   .room{right:0;bottom:62%;padding:16px;gap:14px}
@@ -288,6 +305,7 @@ body.boot .brand,body.boot .hint,body.boot .dial{opacity:0}
 <div class="contact-wrap" id="contact"><button class="cbtn" id="cbtn" type="button" aria-expanded="false" aria-controls="cpanel">Contact<i></i></button><div class="cpanel" id="cpanel"></div></div>
 <div class="toast" id="toast" role="status"></div>
 <div class="hint">Drag — look around<br>Hover — the door lights up<br>Click — walk into the light</div>
+<script>if(matchMedia("(pointer:coarse)").matches)document.currentScript.previousElementSibling.innerHTML="Swipe — look around<br>Tap a door — walk into the light"</script>
 
 <nav class="dial" aria-label="Doors">
   <button class="sq" id="prev" aria-label="Previous door">‹</button>
@@ -305,6 +323,7 @@ body.boot .brand,body.boot .hint,body.boot .dial{opacity:0}
 <div id="starTip">Polaris — about me</div>
 <section id="about" aria-hidden="true" aria-label="About PAIISS42">
   <canvas id="gemc" aria-hidden="true"></canvas>
+  <div class="topfade" aria-hidden="true"></div>
   <button class="back" id="aboutBack">← Back to the doors</button>
   <div class="ab-inner">
     <h1 class="rv2">PAIISS42</h1>
@@ -412,7 +431,7 @@ const pad=n=>String(n).padStart(2,'0');
 
 /* ---------- project covers: drawn when no screenshot is given ---------- */
 function hexA(hex,a){const n=parseInt(hex.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`}
-function drawCover(w,h,p){
+function drawCover(w,h,p,noText){
   const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');const u=Math.min(w,h)/100,A=p.accent||'#9fc4ff';
   const r=rng(p.title.length*97+w);
   const bg=x.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#0a0d13');bg.addColorStop(1,'#05070a');x.fillStyle=bg;x.fillRect(0,0,w,h);
@@ -448,6 +467,7 @@ function drawCover(w,h,p){
   }
   x.restore();
   /* title block */
+  if(noText)return c.toDataURL('image/jpeg',.9);
   const pad=Math.max(u*7,w*.075),fs=Math.round(Math.min(w*.11,h*.09));
   x.fillStyle='rgba(255,255,255,.55)';x.font=`500 ${Math.round(fs*.22)}px "JetBrains Mono",ui-monospace,monospace`;x.textBaseline='alphabetic';
   x.fillText(p.genre.toUpperCase().split('').join(String.fromCharCode(8202)),pad,h-pad-fs*1.15);
@@ -456,7 +476,7 @@ function drawCover(w,h,p){
   x.fillText(t,pad,h-pad);
   return c.toDataURL('image/jpeg',.9);
 }
-function buildCovers(){PROJECTS.forEach(p=>{p.thumb=p.image||drawCover(600,920,p);p.wide=p.image||drawCover(1600,1000,p)})}
+function buildCovers(){PROJECTS.forEach(p=>{p.thumb=p.image||drawCover(600,920,p,true);p.wide=p.image||drawCover(1600,1000,p)})}
 
 
 /* ---------- world constants ---------- */
@@ -468,21 +488,7 @@ const between=(a,b)=>a+rr2()*(b-a);
 const D2R=Math.PI/180;
 
 buildCovers();
-/* the glimpse of the project beside each door: blur/tone/feathered edges baked once into a small canvas
-   (live CSS filters + masks on 3D-transformed layers were a big GPU cost) */
-function bakePeek(i,src){
-  const im=src instanceof Image?src:Object.assign(new Image(),{src});
-  const go=()=>{const slot=document.querySelectorAll('.peek canvas')[i];if(!slot)return;const c=slot.getContext('2d'),W=slot.width,H=slot.height;
-    c.globalCompositeOperation='source-over';c.clearRect(0,0,W,H);
-    const iw=im.naturalWidth||im.width,ih=im.naturalHeight||im.height;if(!iw||!ih)return;const k=Math.max(W/iw,H/ih);
-    try{c.filter='blur(1px) saturate(1.15) brightness(1.35)'}catch(_){}
-    c.drawImage(im,(W-iw*k)/2,(H-ih*k)/2,iw*k,ih*k);c.filter='none';
-    c.globalCompositeOperation='destination-in';
-    let g=c.createLinearGradient(0,0,W,0);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(.34,'#000');g.addColorStop(.66,'#000');g.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=g;c.fillRect(0,0,W,H);
-    g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(.18,'#000');g.addColorStop(.82,'#000');g.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=g;c.fillRect(0,0,W,H);
-    c.globalCompositeOperation='source-over'};
-  if(im.complete&&im.naturalWidth)go();else im.addEventListener('load',go,{once:true});
-}
+function bakePeek(i,src){const el=document.querySelectorAll('.peek')[i];if(el)el.style.backgroundImage=`url("${src instanceof Image?src.src:src}")`}
 /* real screenshots: same sources as the old site (direct URL, or the Roblox thumbnail via roproxy).
    Covers stay up until a real image has actually loaded, and remain if the host blocks it. */
 function useReal(i,url){
@@ -510,7 +516,7 @@ function put(cls,css,tf,html){const el=document.createElement('div');el.classNam
 /* ---------- WebGL world: dark sky, endless grid baseplate, landing smoke ---------- */
 let polarisObj=null;const starFx={charge:0,pulseT:-1,dim:0,absorbT:-99,skyT:()=>0};
 let gl=null,scene3=null,cam3=null,floorU=null,smoke=null,net=null,sky=null;const doorGlow=new Array(N).fill(0);
-const doorLights=[];let setGLRatio=null;
+const doorLights=[];
 if(window.THREE){
   gl=new THREE.WebGLRenderer({canvas:$('#gl'),antialias:true,powerPreference:'high-performance'});
   gl.setPixelRatio(Math.min(devicePixelRatio||1,1.25));
@@ -865,7 +871,7 @@ if(window.THREE){
   })();
   const R01=(a,b)=>a+Math.random()*(b-a);
   smoke={u:smokeU,fxR,
-    render(nowS){const busy=bursts.some(b=>nowS-b<9);if(!busy){if(fxDirty){fxR.clear();fxDirty=false}return}fxDirty=true;updatePlexus(nowS);fxR.render(fxScene,cam3)},
+    render(nowS){updatePlexus(nowS);fxR.render(fxScene,cam3)},
     emit(i,nowS){
       const C=doorC[i],T=doorT[i];const Nn=new THREE.Vector3(-C.x,0,-C.z).normalize();
       bursts[i]=nowS;
@@ -953,17 +959,6 @@ if(window.THREE){
 
   const fit=()=>{gl.setSize(innerWidth,innerHeight,false);smoke.fxR.setSize(innerWidth,innerHeight,false);smokeU.uHalfH.value=gl.getDrawingBufferSize(new THREE.Vector2()).y/2;net.setHalf(smokeU.uHalfH.value)};
   addEventListener('resize',fit);fit();
-  setGLRatio=d=>{gl.setPixelRatio(d);smoke.fxR.setPixelRatio(d);smokeU.uPx.value=d;fit()};
-}
-/* adaptive resolution: if frames run long, render the WebGL layers at a lower pixel ratio (and recover when there's headroom) */
-const Q={base:Math.min(devicePixelRatio||1,1.25),d:Math.min(devicePixelRatio||1,1.25),acc:0,n:0,t:0,good:0};
-function qualityTick(dtMs){
-  if(!setGLRatio||sceneHidden||dtMs>120||document.hidden)return;
-  Q.acc+=dtMs;Q.n++;Q.t+=dtMs;if(Q.t<1200)return;
-  const avg=Q.acc/Q.n;Q.acc=Q.n=Q.t=0;
-  if(avg>20&&Q.d>.55){Q.d=Math.max(.55,+(Q.d-.15).toFixed(2));Q.good=0;setGLRatio(Q.d)}
-  else if(avg<13.5&&Q.d<Q.base){if(++Q.good>=3){Q.good=0;Q.d=Math.min(Q.base,+(Q.d+.1).toFixed(2));setGLRatio(Q.d)}}
-  else Q.good=0;
 }
 const S3=window.THREE?new THREE.Matrix4().makeScale(1,-1,1):null;
 const mT=S3&&new THREE.Matrix4(),mX=S3&&new THREE.Matrix4(),mY=S3&&new THREE.Matrix4(),V3=S3&&new THREE.Matrix4();
@@ -995,7 +990,7 @@ PROJECTS.forEach((p,i)=>{
     <div class="float" style="transform:translateY(-4000px)">
       <div class="trail" style="left:${-DW/2}px;top:${FLOOR-DH-720}px"></div>
       <div class="portal" tabindex="0" role="button" aria-label="${p.title}" style="left:${-DW/2}px;top:${FLOOR-DH}px">
-        <div class="bloom"></div><div class="peek"><canvas width="380" height="221"></canvas></div>
+        <div class="bloom"></div><div class="peek"></div>
         <div class="light"><img alt="" src="${p.thumb}"><div class="core"></div></div>
         <div class="meta"><b>${p.title}</b><span>${pad(i+1)}</span></div>
       </div>
@@ -1127,7 +1122,7 @@ cpanel.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',asy
 }));
 
 /* redraw covers once the web fonts are in, so titles on the covers use them */
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(PROJECTS.some(p=>!p.real)){PROJECTS.forEach(p=>{if(!p.real){const r=p.real;p.thumb=drawCover(600,920,p);p.wide=drawCover(1600,1000,p)}});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(PROJECTS.some(p=>!p.real)){PROJECTS.forEach(p=>{if(!p.real){const r=p.real;p.thumb=drawCover(600,920,p,true);p.wide=drawCover(1600,1000,p)}});
   PROJECTS.forEach((p,i)=>{if(p.real)return;const pt=portals[i];pt.querySelector('img').src=p.thumb;bakePeek(i,p.wide)})}});
 loadRealImages();
 
@@ -1338,7 +1333,8 @@ const gem=(()=>{
   glow.scale.set(7,7,1);glow.position.z=-1.5;glow.renderOrder=-1;sc.add(glow);
 
   let t0=-1,lv=-1,ang=0;const arrive=new Float32Array(NP);
-  function fit(){const w=cv.clientWidth,h=cv.clientHeight;if(!w||!h)return;r.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+  function fit(){const w=cv.clientWidth,h=cv.clientHeight;if(!w||!h)return;r.setSize(w,h,false);cam.aspect=w/h;
+    const k=Math.max(1,1.3/cam.aspect);cam.position.set(0,.35*k,7.6*k);cam.lookAt(0,0,0);cam.updateProjectionMatrix()}
   addEventListener('resize',fit);
   const eo=t=>1-Math.pow(1-t,3),ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
   return {
@@ -1453,7 +1449,6 @@ function starTick(now,o){
 const facing=$('#facing');let lastFace=-1;const last={p:'',c:'',s:'',f:''};
 let introStarted=false;
 function tick(now){
-  qualityTick(now-(last.q||now));last.q=now;
   let z=0,dy=0,Pe=P,sx=0,sy=0,rz=0,sc=1,boost=0,fl=0,wI=0,wDir=1,tun=0;
   const tt=now/1000;
   checkDrops(now);
@@ -1540,3 +1535,5 @@ requestAnimationFrame(tick);
 setTimeout(()=>{(window.requestIdleCallback||setTimeout)(()=>gem.prewarm())},1800);
 document.body.classList.add('boot');requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove('boot')));
 </script>
+
+</body></html>
